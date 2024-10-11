@@ -12,10 +12,7 @@ def load_and_validate_config(config_file='config.yml'):
             'check_interval': And(int, lambda n: n > 0),
             'news_monitoring': {
                 'categories': [str],
-                'sources': [str],
-                'title_keywords': [str],
-                'quote_currencies': [str],
-                Optional('custom_filter'): Or(str, None)
+                'quote_currencies': [str]
             },
             'symbol_exclusion_strategy': {
                 'remove_from_approved_coins': bool,

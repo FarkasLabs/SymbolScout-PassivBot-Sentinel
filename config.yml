@@ -13,10 +13,6 @@ news_monitoring:
         - "DELISTING"
         - "TOKEN_SWAP"
 
-    # Sources to monitor (use an empty list [] to monitor all sources)
-    sources:
-        - "Binance"
-        - "Bybit"
     # Quote currencies to monitor (use an empty list [] to monitor all quote currencies)
     # e.g. if you set USDT then a XMR/BNB delisting won't remove XMR from the approved symbols, only XMR/USDT will.
     # Common quote currencies: USDT, USDC, USD, DAI, BUSD

@@ -14,33 +14,28 @@ class TestConfig(unittest.TestCase):
 
     def test_valid_config(self):
         config_content = """
-symbolscout_endpoint: "https://symbolscout.farkaslabs.xyz/api/news/breaking"
-check_interval: 600
-news_monitoring:
-  categories:
-    - "DELISTING"
-    - "TOKEN_SWAP"
-  sources:
-    - "Binance"
-    - "Bybit"
-  title_keywords: []
-  quote_currencies:
-    - "USDT"
-    - "USDC"
-  custom_filter: null
-symbol_exclusion_strategy:
-  remove_from_approved_coins: true
-  add_to_ignored_coins: false
-passivbot:
-  passivbot_folder: "~/passivbot"
-  mode: "tmuxp"
-  tmuxp:
-    tmux_config_file: "./passivbot-tmux-sessions-example.yml"
-    tmux_session_name: "passivbot_instances"
-    stop_command: "tmux has-session -t {tmux_session_name} && tmux kill-session -t {tmux_session_name} || true"
-    start_command: "tmuxp load -d {tmux_config_file}"
-  passivbot_config_files:
-    - config_file: "{passivbot_folder}/configs/forager/bybit_01.json"
+        symbolscout_endpoint: "https://symbolscout.farkaslabs.xyz/api/news/breaking"
+        check_interval: 600
+        news_monitoring:
+            categories:
+                - "DELISTING"
+                - "TOKEN_SWAP"
+            quote_currencies:
+                - "USDT"
+                - "USDC"
+        symbol_exclusion_strategy:
+            remove_from_approved_coins: true
+            add_to_ignored_coins: false
+        passivbot:
+            passivbot_folder: "~/passivbot"
+            mode: "tmuxp"
+            tmuxp:
+                tmux_config_file: "./passivbot-tmux-sessions-example.yml"
+                tmux_session_name: "passivbot_instances"
+                stop_command: "tmux has-session -t {tmux_session_name} && tmux kill-session -t {tmux_session_name} || true"
+                start_command: "tmuxp load -d {tmux_config_file}"
+            passivbot_config_files:
+                - config_file: "{passivbot_folder}/configs/forager/bybit_01.json"
         """
         
         with open(self.config_path, 'w') as f:
