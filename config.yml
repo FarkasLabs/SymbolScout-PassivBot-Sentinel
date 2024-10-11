@@ -13,9 +13,14 @@ news_monitoring:
         - "DELISTING"
         - "TOKEN_SWAP"
 
-    # Quote currencies to monitor (use an empty list [] to monitor all quote currencies)
-    # e.g. if you set USDT then a XMR/BNB delisting won't remove XMR from the approved symbols, only XMR/USDT will.
-    # Common quote currencies: USDT, USDC, USD, DAI, BUSD
+    # Quote currencies to monitor for news filtering
+    # This setting affects which news articles are considered relevant:
+    # - If specified: Only news involving these quote currencies will be processed
+    # - If empty []: All news articles will be considered, regardless of quote currency
+    #
+    # Note: This is different from the trading quote currency used in your PassivBot config
+    #
+    # Common quote currencies: USDT, USDC, USD, DAI
     quote_currencies:
         - "USDT"
         - "USDC"
@@ -33,6 +38,14 @@ symbol_exclusion_strategy:
 passivbot:
     # Folder where passivbot is located
     passivbot_folder: "~/passivbot"
+
+    # Trading quote currency for your PassivBot configurations
+    # This specifies the quote currency used in your trading pairs (e.g., BTCUSDT)
+    # Options:
+    # 1. Specify a value: Will be used for all configs (e.g., "USDT")
+    # 2. Leave empty or remove this line: The script will attempt to detect
+    #    the quote currency from each PassivBot config file individually
+    trading_quote_currency: "USDT"
 
     # Execution mode (tmuxp, docker, systemd, etc.)
     # This determines how PassivBot instances are started and stopped
@@ -52,15 +65,15 @@ passivbot:
         # Command to stop PassivBot
         # This command kills the tmux session if it exists
         # The '|| true' at the end ensures the command doesn't fail if the session doesn't exist
-        stop_command: "tmux has-session -t {tmux_session_name} && tmux kill-session -t {tmux_session_name} || true"
+        stop_command: "tmux has-session -t $tmux_session_name && tmux kill-session -t $tmux_session_name || true"
 
         # Command to start PassivBot
         # This loads the tmuxp configuration file in detached mode
-        start_command: "tmuxp load -d {tmux_config_file}"
+        start_command: "tmuxp load -d $tmux_config_file"
 
     # PassivBot configuration files to update based on the news
     passivbot_config_files:
-        - config_file: "{passivbot_folder}/configs/forager/bybit_01.json"
-        - config_file: "{passivbot_folder}/configs/forager/bybit_02.json"
-        - config_file: "{passivbot_folder}/configs/forager/bybit_03.json"
-        - config_file: "{passivbot_folder}/configs/forager/bybit_04.json"
+        - config_file: "$passivbot_folder/configs/forager/bybit_01.json"
+        - config_file: "$passivbot_folder/configs/forager/bybit_02.json"
+        - config_file: "$passivbot_folder/configs/forager/bybit_03.json"
+        - config_file: "$passivbot_folder/configs/forager/bybit_04.json"

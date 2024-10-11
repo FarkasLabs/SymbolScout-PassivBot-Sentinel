@@ -12,7 +12,7 @@ def extract_symbols(article, quote_currencies):
     
     # Extract from trading pairs
     for pair in article.get('trading_pairs', []):
-        symbols.update(re.split(r'[/\-]', pair))
+        symbols.update(pair.split('/'))
     
     # Remove quote currencies from the symbols
     symbols = symbols - set(quote_currencies)
