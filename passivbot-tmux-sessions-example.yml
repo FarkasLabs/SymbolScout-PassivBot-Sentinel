@@ -1,0 +1,16 @@
+session_name: passivbot_instances
+windows:
+- window_name: passivbot_instances_0
+  layout: even-vertical
+  shell_command_before:
+    - cd ~/passivbot
+    - source ~/passivbot/venv/bin/activate
+  panes:
+    - shell_command:
+      - python3 src/passivbot.py configs/forager/bybit_01.json
+    - shell_command:
+      - python3 src/passivbot.py configs/forager/bybit_02.json
+    - shell_command:
+      - python3 src/passivbot.py configs/forager/bybit_03.json
+    - shell_command:
+      - python3 src/passivbot.py configs/forager/bybit_04.json

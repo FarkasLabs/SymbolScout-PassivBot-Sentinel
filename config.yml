@@ -1,0 +1,70 @@
+# SymbolScout API endpoint
+symbolscout_endpoint: "https://symbolscout.farkaslabs.xyz/api/news/breaking"
+
+# Interval (in seconds) between checks for new news.
+# Keep in mind that SymbolScout scrapes the crypto news sites every 10 minutes.
+# Setting this lower than 600 seconds (10 minutes) may not provide additional benefits.
+check_interval: 600
+
+# News monitoring configuration
+news_monitoring:
+    # Categories of news to monitor (use an empty list [] to monitor all categories)
+    categories:
+        - "DELISTING"
+        - "TOKEN_SWAP"
+
+    # Sources to monitor (use an empty list [] to monitor all sources)
+    sources:
+        - "Binance"
+        - "Bybit"
+    # Quote currencies to monitor (use an empty list [] to monitor all quote currencies)
+    # e.g. if you set USDT then a XMR/BNB delisting won't remove XMR from the approved symbols, only XMR/USDT will.
+    # Common quote currencies: USDT, USDC, USD, DAI, BUSD
+    quote_currencies:
+        - "USDT"
+        - "USDC"
+        - "USD"
+
+# Symbol exclusion strategy when negative news is detected - how it handles the affected symbols
+symbol_exclusion_strategy:
+  # If true, removes the affected symbol from the 'approved_coins' list in PassivBot config
+  remove_from_approved_coins: true
+
+  # If true, adds the affected symbol to the 'ignored_coins' list in PassivBot config
+  add_to_ignored_coins: false
+
+# PassivBot configuration
+passivbot:
+    # Folder where passivbot is located
+    passivbot_folder: "~/passivbot"
+
+    # Execution mode (tmuxp, docker, systemd, etc.)
+    # This determines how PassivBot instances are started and stopped
+    # !!! only tmuxp mode is implemented at the moment !!!
+    mode: "tmuxp"
+
+    # TMuxp specific configuration
+    tmuxp:
+        # Path to the tmuxp configuration file
+        # This file defines the structure of the tmux session for PassivBot
+        tmux_config_file: "./passivbot-tmux-sessions-example.yml"
+
+        # Name of the tmux session
+        # This is used to identify and manage the PassivBot tmux session
+        tmux_session_name: "passivbot_instances"
+
+        # Command to stop PassivBot
+        # This command kills the tmux session if it exists
+        # The '|| true' at the end ensures the command doesn't fail if the session doesn't exist
+        stop_command: "tmux has-session -t {tmux_session_name} && tmux kill-session -t {tmux_session_name} || true"
+
+        # Command to start PassivBot
+        # This loads the tmuxp configuration file in detached mode
+        start_command: "tmuxp load -d {tmux_config_file}"
+
+    # PassivBot configuration files to update based on the news
+    passivbot_config_files:
+        - config_file: "{passivbot_folder}/configs/forager/bybit_01.json"
+        - config_file: "{passivbot_folder}/configs/forager/bybit_02.json"
+        - config_file: "{passivbot_folder}/configs/forager/bybit_03.json"
+        - config_file: "{passivbot_folder}/configs/forager/bybit_04.json"
