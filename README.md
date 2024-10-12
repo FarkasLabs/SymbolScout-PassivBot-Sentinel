@@ -4,6 +4,8 @@
 
 This project integrates SymbolScout's news feed with Passivbot, automatically updating Passivbot configurations based on breaking news about cryptocurrency delistings and token swaps.
 
+![Notifications Example](docs/images/notifications_example.jpg)
+
 ## Warning and Disclaimer
 
 This integration is designed to automatically adjust your Passivbot configuration in response to potentially market-impacting news, but it is still in an experimental stage. Please note:
