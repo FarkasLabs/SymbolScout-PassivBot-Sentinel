@@ -102,6 +102,21 @@ To stop the script:
    exit
    ```
 
+## State Management
+
+The script maintains its state using a `last_processed_state.json` file. This file is created after processing news and helps the script keep track of which news articles have already been processed.
+
+### Resetting Processed News State
+
+If you need to reprocess news (for example, after making configuration changes or if you suspect some news was missed):
+
+1. Stop the script (if it's running)
+2. Delete the `last_processed_state.json` file:
+   ```
+   rm last_processed_state.json
+   ```
+3. Restart the script
+
 ## Testing
 
 Run the test suite:
