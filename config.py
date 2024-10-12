@@ -33,7 +33,9 @@ def load_yaml_with_substitutions(yaml_content, context):
     return yaml.load(yaml_content, Loader=loader)
 
 
-def load_and_validate_config(config_file="config.yml"):
+def load_and_validate_config(config_file="config.local.yml"):
+    if not os.path.exists(config_file):
+           config_file = "config.yml"
     try:
         with open(config_file, "r") as file:
             yaml_content = file.read()

@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 repopack-output.xml
 last_processed_state.json
+config.yml
