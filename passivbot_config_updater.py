@@ -54,7 +54,7 @@ def restart_passivbot_instances(config):
             f"Executing start command: {tmuxp_config['start_command']}"
         )
         subprocess.run(tmuxp_config["start_command"], shell=True, check=True)
-        logger.info("Config Update: Successfully started new PassivBot instances")
+        logger.info("Config Update: Successfully restarted PassivBot instances")
     except subprocess.CalledProcessError as e:
         error_message = f"Error restarting PassivBot instances: {str(e)}"
         logger.error(error_message)
