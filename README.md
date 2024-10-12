@@ -18,7 +18,7 @@ By using this integration, you acknowledge these risks and agree to take full re
 
 ## Features
 
-- Fetches breaking news from SymbolScout API
+- Fetches breaking news from [SymbolScout API](https://symbolscout.farkaslabs.xyz/api/news/breaking)
 - Filters news based on specified categories and quote currencies
 - Updates Passivbot configuration files to exclude affected symbols
 - Restarts Passivbot instances after configuration updates
@@ -54,13 +54,47 @@ The program will use `config.local.yml` if it exists, otherwise it will fall bac
 
 ## Usage
 
-Run the main script:
+It's highly recommended to run this script in a tmux session to ensure it continues running even if your connection drops.
 
-```
-python main.py
-```
+1. Start a new tmux session:
+   ```
+   tmux new -s symbolscout_passivbot
+   ```
 
-The script will run continuously, checking for news updates at the interval specified in the configuration.
+2. Navigate to the project directory:
+   ```
+   cd path/to/SymbolScout-PassivBot-Sentinel
+
+   ```
+
+3. Run the main script:
+   ```
+   python main.py
+   ```
+
+4. Detach from the tmux session by pressing `Ctrl-B` and then `D`.
+    You can reattach to the session later to check on the script:
+    ```
+    tmux attach -t symbolscout_passivbot
+    ```
+
+The script will run continuously in the background, checking for news updates at the interval specified in the configuration.
+
+### Stopping the Script
+
+To stop the script:
+
+1. Reattach to the tmux session:
+   ```
+   tmux attach -t symbolscout_passivbot
+   ```
+
+2. Stop the script by pressing `Ctrl-C`.
+
+3. Exit the tmux session:
+   ```
+   exit
+   ```
 
 ## Testing
 
