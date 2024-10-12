@@ -67,7 +67,7 @@ def update_passivbot_configs(news_articles, config, symbols_to_exclude):
         if update_single_config(
             config_file["config_file"],
             symbols_to_exclude,
-            config["symbol_exclusion_strategy"],
+            config["passivbot"]["symbol_exclusion_strategy"],
             quote_currency,
         ):
             changes_made = True

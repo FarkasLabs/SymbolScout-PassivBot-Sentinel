@@ -61,7 +61,7 @@ def process_news(config):
 
 
 def main():
-    logger.info("Starting SymbolScout integration for PassivBot")
+    logger.info("Started SymbolScout integration for PassivBot")
 
     config = load_and_validate_config()
     if not config:

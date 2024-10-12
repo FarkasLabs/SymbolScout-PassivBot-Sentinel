@@ -3,6 +3,7 @@ import os
 import string
 from schema import Schema, And, Use, Optional, Or
 
+
 class NestedTemplate(string.Template):
     def safe_substitute(self, mapping):
         # First, substitute any variables that are already in the mapping
@@ -64,13 +65,13 @@ def load_and_validate_config(config_file="config.yml"):
                 "symbolscout_endpoint": str,
                 "check_interval": And(int, lambda n: n > 0),
                 "news_monitoring": {"categories": [str], "quote_currencies": [str]},
-                "symbol_exclusion_strategy": {
-                    "remove_from_approved_coins": bool,
-                    "add_to_ignored_coins": bool,
-                },
                 "passivbot": {
                     "passivbot_folder": str,
                     Optional("trading_quote_currency"): str,
+                    "symbol_exclusion_strategy": {
+                        "remove_from_approved_coins": bool,
+                        "add_to_ignored_coins": bool,
+                    },
                     "mode": str,
                     "tmuxp": {
                         "tmux_config_file": str,
@@ -94,4 +95,5 @@ def load_and_validate_config(config_file="config.yml"):
         validated_config = schema.validate(config)
         return validated_config
     except Exception as e:
+        print(f"Error in loading or validating configuration: {str(e)}")
         raise ValueError(f"Error in loading or validating configuration: {str(e)}")

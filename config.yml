@@ -26,14 +26,6 @@ news_monitoring:
         - "USDC"
         - "USD"
 
-# Symbol exclusion strategy when negative news is detected - how it handles the affected symbols
-symbol_exclusion_strategy:
-    # If true, removes the affected symbol from the 'approved_coins' list in PassivBot config
-    remove_from_approved_coins: true
-
-    # If true, adds the affected symbol to the 'ignored_coins' list in PassivBot config
-    add_to_ignored_coins: false
-
 # PassivBot configuration
 passivbot:
     # Folder where passivbot is located
@@ -46,6 +38,14 @@ passivbot:
     # 2. Leave empty or remove this line: The script will attempt to detect
     #    the quote currency from each PassivBot config file individually
     trading_quote_currency: "USDT"
+
+    # Symbol exclusion strategy when negative news is detected - how it handles the affected symbols
+    symbol_exclusion_strategy:
+        # If true, removes the affected symbol from the 'approved_coins' list in PassivBot config
+        remove_from_approved_coins: true
+
+        # If true, adds the affected symbol to the 'ignored_coins' list in PassivBot config
+        add_to_ignored_coins: false
 
     # Execution mode (tmuxp, docker, systemd, etc.)
     # This determines how PassivBot instances are started and stopped

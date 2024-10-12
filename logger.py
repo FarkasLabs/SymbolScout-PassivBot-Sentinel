@@ -14,6 +14,8 @@ class NotifyHandler(logging.Handler):
         if record.levelno >= logging.ERROR and self.notify_config.get('errors', False):
             self.notify('Error', record)
         elif record.levelno == logging.INFO:
+            if 'starting symbolscout integration' in record.msg.lower():
+                self.notify('Startup', record)
             if 'config update' in record.msg.lower() and self.notify_config.get('config_updates', False):
                 self.notify('Config Update', record)
             elif 'new article' in record.msg.lower() and self.notify_config.get('new_news', False):
@@ -26,29 +28,35 @@ class NotifyHandler(logging.Handler):
         )
 
 def setup_logger():
-    config = load_and_validate_config()
-    logger = logging.getLogger('SymbolScout')
-    logger.setLevel(logging.INFO)
+    try:
+        config = load_and_validate_config()
+        logger = logging.getLogger('SymbolScout')
+        logger.setLevel(logging.INFO)
 
-    # Console handler
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
+        # Console handler
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.INFO)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        ch.setFormatter(formatter)
+        logger.addHandler(ch)
 
-    # Check if notifications are enabled
-    if 'notifications' in config and any(config['notifications']['notify_on'].values()):
-        # Notify handler
-        nh = NotifyHandler(config)
-        nh.setLevel(logging.INFO)
-        nh.setFormatter(formatter)
-        logger.addHandler(nh)
-        logger.info("Notification system initialized")
-    else:
-        logger.info("Notifications are disabled")
+        # Check if notifications are enabled
+        if 'notifications' in config and any(config['notifications']['notify_on'].values()):
+            # Notify handler
+            nh = NotifyHandler(config)
+            nh.setLevel(logging.INFO)
+            nh.setFormatter(formatter)
+            logger.addHandler(nh)
+            logger.info("Notification system initialized")
+        else:
+            logger.info("Notifications are disabled")
 
-    return logger
+        return logger
+    except Exception as e:
+        import traceback
+        print("Error in setup_logger:")
+        print(traceback.format_exc())
+        raise
 
 # Create and configure the logger
 logger = setup_logger()
