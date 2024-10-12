@@ -25,9 +25,7 @@ def process_news(config):
 
         new_articles = get_new_articles(news, last_processed_timestamp)
 
-        if new_articles:
-            logger.info(f"Found {len(new_articles)} new articles")
-        else:
+        if not new_articles:
             logger.info("No articles to process.")
             return
 
