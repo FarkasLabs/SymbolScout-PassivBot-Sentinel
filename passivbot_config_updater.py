@@ -51,7 +51,7 @@ def restart_passivbot_instances(config):
     # Start new PassivBot instances
     try:
         logger.info(
-            f"Config Update: Executing start command: {tmuxp_config['start_command']}"
+            f"Executing start command: {tmuxp_config['start_command']}"
         )
         subprocess.run(tmuxp_config["start_command"], shell=True, check=True)
         logger.info("Config Update: Successfully started new PassivBot instances")
@@ -137,7 +137,7 @@ def update_single_config(
 
         if removed_coins:
             logger.info(
-                f"Removed from approved_coins in {os.path.basename(config_file_path)}: {', '.join(removed_coins)}"
+                f"Config Update: Removed from approved_coins in {os.path.basename(config_file_path)}: {', '.join(removed_coins)}"
             )
         else:
             logger.info(
@@ -146,7 +146,7 @@ def update_single_config(
 
         if added_to_ignored:
             logger.info(
-                f"Added to ignored_coins in {os.path.basename(config_file_path)}: {', '.join(added_to_ignored)}"
+                f"Config Update: Added to ignored_coins in {os.path.basename(config_file_path)}: {', '.join(added_to_ignored)}"
             )
         else:
             logger.info(
