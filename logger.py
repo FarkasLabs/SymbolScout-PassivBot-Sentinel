@@ -14,7 +14,7 @@ class NotifyHandler(logging.Handler):
         if record.levelno >= logging.ERROR and self.notify_config.get('errors', False):
             self.notify('Error', record)
         elif record.levelno == logging.INFO:
-            if 'starting symbolscout integration' in record.msg.lower():
+            if 'started symbolscout integration' in record.msg.lower():
                 self.notify('Startup', record)
             if 'config update' in record.msg.lower() and self.notify_config.get('config_updates', False):
                 self.notify('Config Update', record)
