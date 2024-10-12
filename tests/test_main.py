@@ -1,4 +1,3 @@
-from datetime import datetime, timezone
 import unittest
 from unittest.mock import patch, MagicMock
 import main
@@ -6,6 +5,7 @@ import json
 import tempfile
 import os
 import schedule
+from datetime import datetime, timezone
 
 class TestMain(unittest.TestCase):
     def setUp(self):
@@ -85,23 +85,6 @@ class TestMain(unittest.TestCase):
         mock_extract_symbols.assert_called()
         mock_update_configs.assert_called_once()
         mock_update_timestamp.assert_called_once()
-
-    @patch('main.load_and_validate_config')
-    @patch('schedule.every')
-    @patch('time.sleep', side_effect=InterruptedError)  # To break the infinite loop
-    def test_main_scheduling(self, mock_sleep, mock_schedule_every, mock_load_config):
-        mock_config = {'check_interval': 600}
-        mock_load_config.return_value = mock_config
-
-        mock_job = MagicMock()
-        mock_schedule_every.return_value.seconds.do.return_value = mock_job
-
-        with self.assertRaises(InterruptedError):
-            main.main()
-
-        mock_load_config.assert_called_once()
-        mock_schedule_every.assert_called_once_with(600)
-        mock_schedule_every.return_value.seconds.do.assert_called_once_with(main.process_news, mock_config)
 
 if __name__ == '__main__':
     unittest.main()

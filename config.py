@@ -41,16 +41,23 @@ def load_and_validate_config(config_file='config.yml'):
         # Add any additional variables you want to be available for substitution
         context['HOME'] = os.path.expanduser('~')
 
+        # First pass of substitution
         config = load_yaml_with_substitutions(yaml_content, context)
 
         # Add passivbot_folder to context for nested substitutions
         if 'passivbot' in config and 'passivbot_folder' in config['passivbot']:
             context['passivbot_folder'] = config['passivbot']['passivbot_folder']
 
+        # Add tmuxp variables to context
+        if 'passivbot' in config and 'tmuxp' in config['passivbot']:
+            tmuxp_config = config['passivbot']['tmuxp']
+            context.update(tmuxp_config)
+
         # Perform a second pass of substitution for nested variables
         yaml_content = yaml.dump(config)
         config = load_yaml_with_substitutions(yaml_content, context)
 
+        # Validate the configuration
         schema = Schema({
             'symbolscout_endpoint': str,
             'check_interval': And(int, lambda n: n > 0),

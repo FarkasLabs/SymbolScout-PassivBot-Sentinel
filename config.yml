@@ -63,9 +63,8 @@ passivbot:
         tmux_session_name: "passivbot_instances"
 
         # Command to stop PassivBot
-        # This command kills the tmux session if it exists
-        # The '|| true' at the end ensures the command doesn't fail if the session doesn't exist
-        stop_command: "tmux has-session -t $tmux_session_name && tmux kill-session -t $tmux_session_name || true"
+        # This command kills the tmux session
+        stop_command: "tmux kill-session -t $tmux_session_name"
 
         # Command to start PassivBot
         # This loads the tmuxp configuration file in detached mode

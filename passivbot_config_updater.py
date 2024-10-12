@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import subprocess
 
 def determine_quote_currency(config_file_path, config):
     # First, check if it's specified in the main config
@@ -26,10 +27,43 @@ def determine_quote_currency(config_file_path, config):
         logging.error(f"Error determining quote currency from {config_file_path}: {str(e)}. Using USDT as default.")
         return 'USDT'
 
+def restart_passivbot_instances(config):
+    tmuxp_config = config['passivbot']['tmuxp']
+    
+    # Stop existing PassivBot instances
+    try:
+        logging.info(f"Executing stop command: {tmuxp_config['stop_command']}")
+        subprocess.run(tmuxp_config['stop_command'], shell=True, check=True)
+        logging.info("Stopped existing PassivBot instances")
+    except subprocess.CalledProcessError as e:
+        if "session not found" in str(e).lower():
+            logging.info("No existing PassivBot session found to stop")
+        else:
+            logging.error(f"Error stopping PassivBot instances: {str(e)}")
+            return  # Exit the function if we can't stop existing instances
+
+    # Start new PassivBot instances
+    try:
+        logging.info(f"Executing start command: {tmuxp_config['start_command']}")
+        subprocess.run(tmuxp_config['start_command'], shell=True, check=True)
+        logging.info("Started new PassivBot instances")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Error starting PassivBot instances: {str(e)}")
+        
+
 def update_passivbot_configs(news_articles, config, symbols_to_exclude):
+    changes_made = False
     for config_file in config['passivbot']['passivbot_config_files']:
         quote_currency = determine_quote_currency(config_file['config_file'], config)
-        update_single_config(config_file['config_file'], symbols_to_exclude, config['symbol_exclusion_strategy'], quote_currency)
+        if update_single_config(config_file['config_file'], symbols_to_exclude, config['symbol_exclusion_strategy'], quote_currency):
+            changes_made = True
+
+    if changes_made:
+        logging.info("Changes were made to PassivBot configurations. Restarting instances...")
+        restart_passivbot_instances(config)
+    else:
+        logging.info("No changes were made to PassivBot configurations. Skipping restart.")
+        
 
 def update_single_config(config_file_path, symbols_to_exclude, exclusion_strategy, quote_currency):
     try:
@@ -39,10 +73,12 @@ def update_single_config(config_file_path, symbols_to_exclude, exclusion_strateg
 
         if not os.path.exists(config_file_path):
             logging.error(f"Config file does not exist: {config_file_path}")
-            return
+            return False
 
         with open(config_file_path, 'r') as f:
             passivbot_config = json.load(f)
+
+        original_config = json.dumps(passivbot_config)
 
         logging.info(f"Symbols to exclude: {', '.join(symbols_to_exclude)}")
         logging.info(f"Current approved_coins: {', '.join(passivbot_config['live']['approved_coins'])}")
@@ -83,11 +119,17 @@ def update_single_config(config_file_path, symbols_to_exclude, exclusion_strateg
         else:
             logging.info(f"No coins added to ignored_coins in {os.path.basename(config_file_path)}")
 
-        with open(config_file_path, 'w') as f:
-            json.dump(passivbot_config, f, indent=4)
+        if json.dumps(passivbot_config) != original_config:
+            with open(config_file_path, 'w') as f:
+                json.dump(passivbot_config, f, indent=4)
+            logging.info(f"Updated PassivBot config file: {config_file_path}")
+            logging.info(f"Final approved_coins: {', '.join(passivbot_config['live']['approved_coins'])}")
+            logging.info(f"Final ignored_coins: {', '.join(passivbot_config['live'].get('ignored_coins', []))}")
+            return True
+        else:
+            logging.info(f"No changes were necessary for {config_file_path}")
+            return False
 
-        logging.info(f"Updated PassivBot config file: {config_file_path}")
-        logging.info(f"Final approved_coins: {', '.join(passivbot_config['live']['approved_coins'])}")
-        logging.info(f"Final ignored_coins: {', '.join(passivbot_config['live'].get('ignored_coins', []))}")
     except Exception as e:
         logging.error(f"Error updating PassivBot config file {config_file_path}: {str(e)}")
+        return False
