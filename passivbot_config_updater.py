@@ -22,7 +22,7 @@ def determine_quote_currency(config_file_path, config):
                     return common_quote
 
         # If we couldn't determine it, log a warning and use a default
-        logger.warning(
+        logger.error(
             f"Couldn't determine quote currency for {config_file_path}. Using USDT as default."
         )
         return "USDT"
