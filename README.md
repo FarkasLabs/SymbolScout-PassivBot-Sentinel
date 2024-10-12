@@ -32,7 +32,12 @@ By using this integration, you acknowledge these risks and agree to take full re
 
 ## Installation
 1. Clone the repository
-2. Install the required packages:
+2. Optionally create a virtual environment and activate it
+```
+python -m virtualenv venv
+source venv/bin/activate
+```
+3. Install the required packages:
 ```
 pip install -r requirements.txt
 ```
@@ -64,16 +69,17 @@ It's highly recommended to run this script in a tmux session to ensure it contin
 2. Navigate to the project directory:
    ```
    cd path/to/SymbolScout-PassivBot-Sentinel
-
    ```
 
-3. Run the main script:
+3. Activate the virtual environment (if you made one) and run the script:
    ```
+   source venv/bin/activate
    python main.py
    ```
 
 4. Detach from the tmux session by pressing `Ctrl-B` and then `D`.
-    You can reattach to the session later to check on the script:
+
+5. You can reattach to the session later to check on the script:
     ```
     tmux attach -t symbolscout_passivbot
     ```
