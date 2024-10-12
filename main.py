@@ -38,7 +38,7 @@ def process_news(config):
             symbols = extract_symbols(article, quote_currencies)
             symbols_to_exclude.update(symbols)
             logger.info(
-                f"New Article: {article['title']}\n  Category: {article['category']}\n  Symbols: {', '.join(symbols)}\n  Trading Pairs: {', '.join(article.get('trading_pairs', []))}"
+                f"New Article: {article['title']}\n  Category: {article['category']}\n  Symbols: {', '.join(symbols)}\n  Trading Pairs: {', '.join(article.get('trading_pairs', []))}\n {article['link']}"
             )
 
         if symbols_to_exclude:
