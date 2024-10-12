@@ -1,7 +1,6 @@
 import unittest
 import os
-import json
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from state_manager import (
     load_last_processed_timestamp,
     save_last_processed_timestamp,

@@ -1,6 +1,7 @@
 import json
 import os
 from datetime import datetime, timezone
+from logger import logger
 
 STATE_FILE = 'last_processed_state.json'
 
@@ -11,9 +12,9 @@ def load_last_processed_timestamp(file_path=STATE_FILE):
                 state = json.load(f)
                 return datetime.fromisoformat(state['last_processed_timestamp'])
         except (json.JSONDecodeError, KeyError):
-            print(f"Error reading {file_path}. Returning minimum datetime.")
+            logger.info(f"Error reading {file_path}. Returning minimum datetime.")
     else:
-        print(f"No state file found at {file_path}. Returning minimum datetime.")
+        logger.info(f"No state file found at {file_path}. Returning minimum datetime.")
     
     return datetime.min.replace(tzinfo=timezone.utc)
 

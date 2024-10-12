@@ -48,15 +48,37 @@ class TestConfig(unittest.TestCase):
 
     def test_invalid_config(self):
         invalid_config_content = """
-symbolscout_endpoint: "https://symbolscout.farkaslabs.xyz/api/news/breaking"
-check_interval: "not an integer"
-        """
-        
+        symbolscout_endpoint: "https://symbolscout.farkaslabs.xyz/api/news/breaking"
+        check_interval: "not an integer"  # This should cause a validation error
+        news_monitoring:
+            categories: []
+            quote_currencies: []
+        symbol_exclusion_strategy:
+            remove_from_approved_coins: true
+            add_to_ignored_coins: false
+        passivbot:
+            passivbot_folder: "~/passivbot"
+            mode: "tmuxp"
+            tmuxp:
+                tmux_config_file: "./passivbot-tmux-sessions-example.yml"
+                tmux_session_name: "passivbot_instances"
+                stop_command: "tmux has-session -t {tmux_session_name} && tmux kill-session -t {tmux_session_name} || true"
+                start_command: "tmuxp load -d {tmux_config_file}"
+            passivbot_config_files:
+                - config_file: "{passivbot_folder}/configs/forager/bybit_01.json"
+        notifications:
+            apprise_urls: []
+            notify_on:
+                errors: true
+                config_updates: true
+                new_news: true
+            """
+    
         with open(self.config_path, 'w') as f:
             f.write(invalid_config_content)
         
-        config = load_and_validate_config(self.config_path)
-        self.assertIsNone(config)
+        with self.assertRaises(ValueError):
+            load_and_validate_config(self.config_path)
 
 if __name__ == '__main__':
     unittest.main()

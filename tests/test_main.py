@@ -4,7 +4,6 @@ import main
 import json
 import tempfile
 import os
-import schedule
 from datetime import datetime, timezone
 
 class TestMain(unittest.TestCase):

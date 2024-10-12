@@ -39,7 +39,14 @@ class TestPassivbotConfigUpdater(unittest.TestCase):
                 "passivbot_config_files": [
                     {"config_file": self.config_path}
                 ],
-                "trading_quote_currency": "USDT"
+                "trading_quote_currency": "USDT",
+                "mode": "tmuxp",
+                "tmuxp": {
+                    "tmux_config_file": "dummy_path",
+                    "tmux_session_name": "dummy_session",
+                    "stop_command": "dummy_stop",
+                    "start_command": "dummy_start"
+                }
             }
         }
         symbols_to_exclude = {"XRP", "ADA"}
@@ -67,7 +74,14 @@ class TestPassivbotConfigUpdater(unittest.TestCase):
                 "passivbot_config_files": [
                     {"config_file": self.config_path}
                 ],
-                "trading_quote_currency": "USDT"
+                "trading_quote_currency": "USDT",
+                "mode": "tmuxp",
+                "tmuxp": {
+                    "tmux_config_file": "dummy_path",
+                    "tmux_session_name": "dummy_session",
+                    "stop_command": "dummy_stop",
+                    "start_command": "dummy_start"
+                }
             }
         }
         symbols_to_exclude = {"XRP", "ADA"}

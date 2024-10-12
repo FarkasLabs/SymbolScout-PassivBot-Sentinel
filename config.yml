@@ -28,11 +28,11 @@ news_monitoring:
 
 # Symbol exclusion strategy when negative news is detected - how it handles the affected symbols
 symbol_exclusion_strategy:
-  # If true, removes the affected symbol from the 'approved_coins' list in PassivBot config
-  remove_from_approved_coins: true
+    # If true, removes the affected symbol from the 'approved_coins' list in PassivBot config
+    remove_from_approved_coins: true
 
-  # If true, adds the affected symbol to the 'ignored_coins' list in PassivBot config
-  add_to_ignored_coins: false
+    # If true, adds the affected symbol to the 'ignored_coins' list in PassivBot config
+    add_to_ignored_coins: false
 
 # PassivBot configuration
 passivbot:
@@ -76,3 +76,28 @@ passivbot:
         - config_file: "$passivbot_folder/configs/forager/bybit_02.json"
         - config_file: "$passivbot_folder/configs/forager/bybit_03.json"
         - config_file: "$passivbot_folder/configs/forager/bybit_04.json"
+
+# Notification configuration using Apprise
+notifications:
+    # Apprise URLs for sending notifications. You can set multiple notification channels.
+    # You can specify multiple URLs to send notifications to different services
+    # For a full list of supported services and URL formats, visit:
+    # https://github.com/caronc/apprise/wiki
+    # Some examples:
+    # apprise_urls:
+    #     - "mailtos://mySendingUsername:mySendingPassword@example.com?to=receivingAddress@example.com"
+    #     - "tgram://bottoken/chatid"
+    #     - "discord://webhook_id/webhook_token"
+    apprise_urls:
+        - "discord://webhook_id/webhook_token"
+
+    # Configure which events trigger notifications
+    notify_on:
+        # Set to true to receive notifications about all errors
+        errors: true
+
+        # Set to true to be notified when a PassivBot config is updated and the bot is restarted
+        config_updates: true
+
+        # Set to true to be notified when new, unprocessed news is detected and processed
+        new_news: true

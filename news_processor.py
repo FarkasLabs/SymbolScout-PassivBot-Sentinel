@@ -1,5 +1,5 @@
-import logging
-import re
+from logger import logger
+
 
 def extract_symbols(article, quote_currencies):
     symbols = set()
@@ -25,7 +25,7 @@ def filter_news(news, config):
     categories = config['news_monitoring']['categories']
     quote_currencies = config['news_monitoring']['quote_currencies']
 
-    logging.info(f"Filtering criteria - Categories: {categories}, Quote Currencies: {quote_currencies}")
+    logger.info(f"Filtering criteria - Categories: {categories}, Quote Currencies: {quote_currencies}")
 
     def matches_criteria(article):
         category_match = not categories or article['category'] in categories
@@ -41,6 +41,6 @@ def filter_news(news, config):
     filtered_news = [article for article in all_news if matches_criteria(article)]
 
     for article in filtered_news:
-        logging.info(f"Kept article: {article['title']} (Category: {article['category']})")
+        logger.info(f"Kept article: {article['title']} (Category: {article['category']})")
 
     return filtered_news
