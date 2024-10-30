@@ -6,8 +6,33 @@ symbolscout_endpoint: "https://symbolscout.farkaslabs.xyz/api/news/breaking"
 # Setting this lower than 600 seconds (10 minutes) may not provide additional benefits.
 check_interval: 600
 
-# News monitoring configuration
+# Symbol list synchronization configuration - syncs full symbol lists
+symbol_list_sync:
+    # Enable/disable full symbol list synchronization
+    enabled: true
+    
+    # SymbolScout watchlist configuration
+    # Copy your watchlist's API link from here: https://symbolscout.farkaslabs.xyz/watchlists
+    symbolscout_watchlist:
+        enabled: true
+        endpoint: "https://symbolscout.farkaslabs.xyz/api/watchlists/YOUR_ID.json"
+    
+    # RemotePairList configuration
+    # https://remotepairlist.com/ - copy link from "How To" tab
+    remotepairlist:
+        enabled: true
+        endpoint: "https://remotepairlist.com?q=YOUR_ID"
+    
+    # Merge strategy when both sources are enabled
+    # Options: "intersection" (symbols present in both lists)
+    #          "union" (symbols from either list)
+    merge_strategy: "intersection"
+
+# News monitoring configuration - this mode only removes symbols from the approved_coins list based on delisting news
+# Symbol list synchronization (above) is preferred
 news_monitoring:
+    enabled: false
+
     # Categories of news to monitor (use an empty list [] to monitor all categories)
     categories:
         - "DELISTING"
@@ -25,6 +50,7 @@ news_monitoring:
         - "USDT"
         - "USDC"
         - "USD"
+
 
 # PassivBot configuration
 passivbot:
@@ -85,7 +111,6 @@ notifications:
     # https://github.com/caronc/apprise/wiki
     # Some examples:
     # apprise_urls:
-    #     - "mailtos://mySendingUsername:mySendingPassword@example.com?to=receivingAddress@example.com"
     #     - "tgram://bottoken/chatid"
     #     - "discord://webhook_id/webhook_token"
     apprise_urls:

@@ -10,6 +10,7 @@ from state_manager import (
     update_last_processed_timestamp,
 )
 from logger import logger
+from symbol_list_sync import get_combined_symbol_list
 
 
 def process_news(config):
@@ -60,47 +61,56 @@ def process_news(config):
 
 def main():
     logger.info("Started SymbolScout integration for PassivBot")
-
     config = load_and_validate_config()
+
     if not config:
         logger.error("Configuration loading or validation failed. Exiting.")
         return
 
-    # Run process_news once immediately
-    process_news(config)
+    # Schedule news monitoring if enabled
+    if config.get("news_monitoring", {}).get("enabled", False):
+        logger.info("News monitoring enabled, scheduling checks")
+        schedule.every(config["check_interval"]).seconds.do(process_news, config)
+        process_news(config)
+    else:
+        logger.info("News monitoring disabled")
 
-    # Schedule future runs
-    schedule.every(config["check_interval"]).seconds.do(process_news, config)
+    # Schedule symbol list sync if enabled
+    if config.get("symbol_list_sync", {}).get("enabled", False):
+        logger.info("Symbol list sync enabled, scheduling checks")
+        schedule.every(config["check_interval"]).seconds.do(sync_symbol_lists, config)
+        sync_symbol_lists(config)
+    else:
+        logger.info("Symbol list sync disabled")
 
-    logger.info(f"Scheduled to run every {config['check_interval']} seconds")
+    if not config.get("news_monitoring", {}).get("enabled", False) and not config.get(
+        "symbol_list_sync", {}
+    ).get("enabled", False):
+        logger.error(
+            "No monitoring mode is enabled. Please enable either news monitoring or symbol list sync."
+        )
+        return
 
-    last_log_time = time.time()
-    log_interval = 60  # Log remaining time every 60 seconds
-
+    # Main loop
     while True:
-        # Get the number of seconds until the next job
-        idle_seconds = schedule.idle_seconds()
-
-        if idle_seconds is None:
-            logger.info("No more jobs scheduled. Exiting.")
-            break
-
-        current_time = time.time()
-        if current_time - last_log_time >= log_interval:
-            logger.info(f"Next update in {int(idle_seconds)} seconds")
-            last_log_time = current_time
-
-        # Sleep until the next job or for 1 second, whichever is shorter
-        time.sleep(min(idle_seconds, 1))
-
         schedule.run_pending()
+        time.sleep(1)
+
+
+def sync_symbol_lists(config):
+    try:
+        approved_symbols = get_combined_symbol_list(config)
+        if approved_symbols is not None:
+            update_passivbot_configs(None, config, approved_symbols=approved_symbols)
+    except Exception as e:
+        logger.error(f"Error in symbol list sync: {str(e)}")
 
 
 if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        if (logger):
+        if logger:
             logger.error(f"An error occurred: {str(e)}")
         else:
             print(f"An error occurred: {str(e)}")

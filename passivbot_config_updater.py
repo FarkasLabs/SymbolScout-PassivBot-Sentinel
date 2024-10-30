@@ -1,6 +1,7 @@
 import json
 import os
 import subprocess
+from typing import Set
 from logger import logger
 
 
@@ -60,27 +61,79 @@ def restart_passivbot_instances(config):
         logger.error(error_message)
 
 
-def update_passivbot_configs(news_articles, config, symbols_to_exclude):
+def update_passivbot_configs(news_articles, config, symbols_to_exclude=None, approved_symbols=None):
+    """
+    Update PassivBot configs based on either exclusion list or full symbol list.
+    """
     changes_made = False
-    for config_file in config["passivbot"]["passivbot_config_files"]:
-        quote_currency = determine_quote_currency(config_file["config_file"], config)
-        if update_single_config(
-            config_file["config_file"],
-            symbols_to_exclude,
-            config["passivbot"]["symbol_exclusion_strategy"],
-            quote_currency,
-        ):
-            changes_made = True
-
+    
+    if approved_symbols is not None:
+        # Full list sync mode
+        for config_file in config["passivbot"]["passivbot_config_files"]:
+            quote_currency = determine_quote_currency(config_file["config_file"], config)
+            if update_config_approved_list(
+                config_file["config_file"],
+                approved_symbols,
+                quote_currency
+            ):
+                changes_made = True
+    elif symbols_to_exclude:
+        # Breaking news exclusion mode
+        for config_file in config["passivbot"]["passivbot_config_files"]:
+            quote_currency = determine_quote_currency(config_file["config_file"], config)
+            if update_single_config(
+                config_file["config_file"],
+                symbols_to_exclude,
+                config["passivbot"]["symbol_exclusion_strategy"],
+                quote_currency,
+            ):
+                changes_made = True
+                
     if changes_made:
-        logger.info(
-            "Changes were made to PassivBot configurations. Restarting instances..."
-        )
+        logger.info("Changes were made to PassivBot configurations. Restarting instances...")
         restart_passivbot_instances(config)
     else:
-        logger.info(
-            "No changes were made to PassivBot configurations. Skipping restart."
-        )
+        logger.info("No changes were made to PassivBot configurations. Skipping restart.")
+
+
+def update_config_approved_list(config_file_path: str, approved_symbols: Set[str], quote_currency: str) -> bool:
+    """
+    Update the approved_coins list with the provided symbols.
+    """
+    try:
+        with open(config_file_path, "r") as f:
+            passivbot_config = json.load(f)
+            
+        current_approved = set(passivbot_config["live"]["approved_coins"])
+        new_approved = {f"{symbol}{quote_currency}" for symbol in approved_symbols}
+        
+        if current_approved != new_approved:
+            # Calculate the differences
+            removed_symbols = current_approved - new_approved
+            added_symbols = new_approved - current_approved
+            
+            # Log the changes
+            if removed_symbols:
+                logger.info(f"Removing symbols: {', '.join(sorted(removed_symbols))}")
+            if added_symbols:
+                logger.info(f"Adding symbols: {', '.join(sorted(added_symbols))}")
+                
+            # Update the config
+            passivbot_config["live"]["approved_coins"] = sorted(list(new_approved))
+            
+            with open(config_file_path, "w") as f:
+                json.dump(passivbot_config, f, indent=4)
+                
+            logger.info(f"Updated approved_coins list in {os.path.basename(config_file_path)}")
+            logger.info(f"Total symbols in new list: {len(new_approved)}")
+            return True
+        else:
+            logger.info(f"No changes needed for {os.path.basename(config_file_path)} (current list: {len(current_approved)} symbols)")
+            return False
+        
+    except Exception as e:
+        logger.error(f"Error updating approved_coins list in {config_file_path}: {str(e)}")
+        return False
 
 
 def update_single_config(
