@@ -62,11 +62,11 @@ def process_news(config):
 def main():
     logger.info("Started SymbolScout integration for PassivBot")
     config = load_and_validate_config()
-
+    
     if not config:
         logger.error("Configuration loading or validation failed. Exiting.")
         return
-
+        
     # Schedule news monitoring if enabled
     if config.get("news_monitoring", {}).get("enabled", False):
         logger.info("News monitoring enabled, scheduling checks")
@@ -74,7 +74,7 @@ def main():
         process_news(config)
     else:
         logger.info("News monitoring disabled")
-
+        
     # Schedule symbol list sync if enabled
     if config.get("symbol_list_sync", {}).get("enabled", False):
         logger.info("Symbol list sync enabled, scheduling checks")
@@ -82,19 +82,40 @@ def main():
         sync_symbol_lists(config)
     else:
         logger.info("Symbol list sync disabled")
-
-    if not config.get("news_monitoring", {}).get("enabled", False) and not config.get(
-        "symbol_list_sync", {}
-    ).get("enabled", False):
-        logger.error(
-            "No monitoring mode is enabled. Please enable either news monitoring or symbol list sync."
-        )
+        
+    if not config.get("news_monitoring", {}).get("enabled", False) and \
+       not config.get("symbol_list_sync", {}).get("enabled", False):
+        logger.error("No monitoring mode is enabled. Please enable either news monitoring or symbol list sync.")
         return
-
+    
+    # Initialize countdown logging
+    last_log_time = time.time()
+    log_interval = 60  # Log remaining time every 60 seconds
+    
     # Main loop
     while True:
-        schedule.run_pending()
-        time.sleep(1)
+        try:
+            # Get the number of seconds until the next job
+            idle_seconds = schedule.idle_seconds()
+            if idle_seconds is None:
+                logger.info("No more jobs scheduled. Exiting.")
+                break
+                
+            current_time = time.time()
+            if current_time - last_log_time >= log_interval:
+                logger.info(f"Next update in {int(idle_seconds)} seconds")
+                last_log_time = current_time
+                
+            # Sleep until the next job or for 1 second, whichever is shorter
+            time.sleep(min(idle_seconds, 1))
+            schedule.run_pending()
+            
+        except KeyboardInterrupt:
+            logger.info("Received keyboard interrupt, shutting down...")
+            break
+        except Exception as e:
+            logger.error(f"Error in main loop: {str(e)}")
+            time.sleep(1)  # Prevent tight error loop
 
 
 def sync_symbol_lists(config):

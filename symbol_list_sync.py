@@ -23,7 +23,6 @@ def fetch_remotepairlist(endpoint: str) -> Optional[Set[str]]:
         symbols = set()
         pairs = data.get("pairs", [])
         
-        logger.debug(f"Raw pairs from RemotePairList: {pairs}")
 
         for pair in pairs:
             # Handle both formats: "BTC/USDT" and "BTC/USDT:USDT"
@@ -66,7 +65,6 @@ def normalize_symbol(s: str) -> Tuple[int, str]:
     Normalizes a symbol by extracting its multiplier and base name.
     """
     multiplier, symbol = extract_multiplier_and_symbol(s)
-    logger.debug(f"Normalized '{s}' to ({multiplier}, {symbol})")
     return (multiplier, symbol)
 
 
@@ -86,9 +84,6 @@ def merge_symbol_lists(symbolscout_symbols: Optional[Set[str]],
     normalized_symbolscout = {normalize_symbol(s) for s in symbolscout_symbols}
     normalized_remotelist = {normalize_symbol(s) for s in remotepairlist_symbols}
     
-    logger.debug(f"Normalized SymbolScout: {sorted(normalized_symbolscout)}")
-    logger.debug(f"Normalized RemotePairList: {sorted(normalized_remotelist)}")
-    
     # Create dictionaries with symbol as key and multiplier as value
     symbolscout_dict = {symbol: mult for mult, symbol in normalized_symbolscout}
     remotelist_dict = {symbol: mult for mult, symbol in normalized_remotelist}
@@ -98,8 +93,6 @@ def merge_symbol_lists(symbolscout_symbols: Optional[Set[str]],
         common_symbols = set(symbolscout_dict.keys()) & set(remotelist_dict.keys())
     else:  # union
         common_symbols = set(symbolscout_dict.keys()) | set(remotelist_dict.keys())
-    
-    logger.debug(f"Common symbols: {sorted(common_symbols)}")
     
     # For each common symbol, use the highest multiplier from either source
     final_symbols = set()
@@ -116,7 +109,6 @@ def merge_symbol_lists(symbolscout_symbols: Optional[Set[str]],
             final_symbols.add(f"{multiplier}{symbol}")
     
     logger.info(f"Merged symbol lists ({len(final_symbols)} symbols)")
-    logger.debug(f"Final symbols: {sorted(final_symbols)}")
     
     return final_symbols
 
@@ -127,7 +119,6 @@ def normalize_pair_symbol(pair: str) -> str:
     """
     # Handle both formats: "BTC/USDT" and "BTC/USDT:USDT"
     base = pair.split("/")[0]
-    logger.debug(f"Extracted base symbol '{base}' from pair '{pair}'")
     return base
 
 
